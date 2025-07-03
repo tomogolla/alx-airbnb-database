@@ -1,5 +1,5 @@
 
-### Overview of What You're Seeing
+### Overview of the Output
 #### Output:
 
 | Table   | Access Type | Index Used             | Rows Scanned | Notes                 |
@@ -48,6 +48,69 @@
 
 5. **Use `EXPLAIN ANALYZE` (if MySQL 8.0+)**:
    - It shows actual execution time and row counts for deeper insight.
+
+---
+
+
+---
+
+### Original Query Recap
+When joining:
+
+- `booking` → base table
+- `user` → required (who made the booking)
+- `property` → required (which was booked)
+- `payment` → optional (`LEFT JOIN`)
+
+It is observed that `property` was being scanned fully (`type = ALL`), suggesting indexing or join strategy improvements are needed.
+
+---
+
+### Refactored Query (Performance-Oriented)
+```sql
+SELECT 
+    b.booking_id,
+    b.start_date,
+    b.end_date,
+    b.total_price,
+    b.status,
+    b.created_at,
+
+    u.first_name AS user_name,
+    p.name AS property_name,
+    pay.amount AS payment_amount
+
+FROM booking b
+STRAIGHT_JOIN user u ON b.user_id = u.user_id
+STRAIGHT_JOIN property p ON b.property_id = p.property_id
+LEFT JOIN payment pay ON b.booking_id = pay.booking_id;
+```
+
+---
+
+### Key Improvements
+
+| Strategy | Why It Helps |
+|---------|--------------|
+| `STRAIGHT_JOIN` | Forces MySQL to process `booking` first, avoiding inefficient join order guesses |
+| Select fewer columns | Only needed fields to reduce memory usage and sort overhead |
+| Explicit aliasing | Keeps columns readable and avoids ambiguity |
+| Indexed foreign keys | Make sure these are indexed: `booking.user_id`, `booking.property_id`, `payment.booking_id` |
+
+---
+
+### Indexing extra
+Run these statements to enforce index coverage:
+```sql
+CREATE INDEX idx_booking_user_id ON booking(user_id);
+CREATE INDEX idx_booking_property_id ON booking(property_id);
+CREATE INDEX idx_payment_booking_id ON payment(booking_id);
+```
+
+If `property` table still shows `type = ALL`, consider:
+```sql
+CREATE INDEX idx_property_id ON property(property_id);
+```
 
 ---
 
