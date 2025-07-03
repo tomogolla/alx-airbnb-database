@@ -15,3 +15,18 @@ CREATE INDEX idx_booking_user ON booking(user_id);
 CREATE INDEX idx_booking_status ON booking(status);
 CREATE INDEX idx_booking_dates ON booking(start_date, end_date); -- Composite index
 CREATE INDEX idx_booking_created ON booking(created_at);
+
+-- Query performance and monitoring
+-- Using EXPLAIN (see index_perfomance.md)
+EXPLAIN
+SELECT 
+	u.first_name,
+    u.user_id,
+	COUNT(b.booking_id) AS total_bookings
+FROM user u
+JOIN booking b ON u.user_id = b.user_id
+GROUP BY u.user_id, u.first_name
+
+-- monitor for query performance on booking table using ANALYZE
+-- This returns status OK(see index_perfomance.md)
+ANALYZE TABLE booking
