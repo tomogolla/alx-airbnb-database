@@ -30,3 +30,14 @@ GROUP BY u.user_id, u.first_name
 -- monitor for query performance on booking table using ANALYZE
 -- This returns status OK(see index_perfomance.md)
 ANALYZE TABLE booking
+
+-- EXPLAIN ANALYZE 
+	-- returns query performance in detail including resource usage and time complexity
+EXPLAIN ANALYZE
+SELECT 
+	u.first_name,
+    u.user_id,
+	COUNT(b.booking_id) AS total_bookings
+FROM user u
+JOIN booking b ON u.user_id = b.user_id
+GROUP BY u.user_id, u.first_name
