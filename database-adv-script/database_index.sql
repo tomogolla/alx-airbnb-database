@@ -1,6 +1,7 @@
 -- User Table Indexes
 CREATE INDEX idx_user_role ON user(role);
-CREATE INDEX idx_user_created_at ON user(created_at);
+CREATE INDEX idx_user_id ON user(user_id);
+CREATE INDEX idx_user_email ON user(email);
 
 -- Property Table Indexes
 CREATE INDEX idx_property_host ON property(host_id);
