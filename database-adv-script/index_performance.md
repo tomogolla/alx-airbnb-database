@@ -77,3 +77,7 @@ Watch for growth in the booking table - if rows exceed 10,000, consider:
 
 ANALYZE TABLE booking;
 Review temporary table usage if this query becomes slower over time
+
+## **Explain analyze**
+'-> Table scan on <temporary>  (actual time=3.72..3.72 rows=5 loops=1)\n    -> Aggregate using temporary table  (actual time=3.71..3.71 rows=5 loops=1)\n        -> Nested loop inner join  (cost=7 rows=15) (actual time=1.07..2.23 rows=15 loops=1)\n            -> Covering index scan on b using idx_booking_user  (cost=1.75 rows=15) (actual time=0.521..1.62 rows=15 loops=1)\n            -> Single-row index lookup on u using PRIMARY (user_id=b.user_id)  (cost=0.257 rows=1) (actual time=0.0156..0.0156 rows=1 loops=15)\n'
+
