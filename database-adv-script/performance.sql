@@ -52,4 +52,22 @@ SELECT
     LEFT JOIN payment pay on b.booking_id = pay.booking_id
     
     
+-- refactored query retrieving booking with user details and payment details
+EXPLAIN
+SELECT 
+    b.booking_id,
+    b.start_date,
+    b.end_date,
+    b.total_price,
+    b.status,
+    b.created_at,
+
+    u.first_name AS user_name,
+    p.name AS property_name,
+    pay.amount AS payment_amount
+
+FROM booking b
+STRAIGHT_JOIN user u ON b.user_id = u.user_id
+STRAIGHT_JOIN property p ON b.property_id = p.property_id
+LEFT JOIN payment pay ON b.booking_id = pay.booking_id;
     
