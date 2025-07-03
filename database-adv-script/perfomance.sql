@@ -71,3 +71,38 @@ STRAIGHT_JOIN user u ON b.user_id = u.user_id
 STRAIGHT_JOIN property p ON b.property_id = p.property_id
 LEFT JOIN payment pay ON b.booking_id = pay.booking_id;
     
+-- All bookings with user details, property info, and payment data
+-- Filtered by date range and booking status
+SELECT
+    b.booking_id,
+    b.start_date,
+    b.end_date,
+    b.status,
+    b.total_price,
+    
+    u.user_id,
+    u.first_name as user_name,
+    u.email AS user_email,
+    
+    p.property_id,
+    p.name AS property_name,
+    p.location,
+    
+    pay.payment_id,
+    pay.amount AS payment_amount,
+    pay.payment_method
+    
+FROM booking b
+JOIN user u ON b.user_id = u.user_id
+JOIN property p ON p.property_id = b.property_id
+LEFT JOIN payment pay ON b.booking_id = pay.booking_id
+WHERE 
+    b.start_date >= '2023-01-01'  -- Bookings starting after Jan 1, 2023
+    AND b.end_date <= '2023-12-31'  -- Bookings ending before Dec 31, 2023
+    AND b.status = 'confirmed'  -- Only confirmed bookings
+    AND p.location LIKE '%New York%'  -- Properties in New York
+    AND (
+        pay.payment_method = 'credit_card'  -- Either credit card payments
+        OR pay.payment_method IS NULL  -- Or unpaid bookings
+    )
+ORDER BY b.start_date DESC;
