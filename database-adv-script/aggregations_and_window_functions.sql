@@ -10,7 +10,6 @@ SELECT
   property_id,
   total_bookings,
   ROW_NUMBER() OVER (ORDER BY total_bookings DESC) AS booking_rank
-  RANK(total_bookings)
 FROM (
   SELECT 
     property_id,
@@ -19,3 +18,16 @@ FROM (
   GROUP BY property_id
 ) AS booking_counts;
 
+-- Query: Rank Users by Total Payment Amount
+SELECT 
+  user_id,
+  total_paid,
+  RANK() OVER (ORDER BY total_paid DESC) AS payment_rank
+FROM (
+  SELECT 
+    b.user_id,
+    SUM(pay.amount) AS total_paid
+  FROM booking b
+  JOIN payment pay ON b.booking_id = pay.booking_id
+  GROUP BY b.user_id
+) AS user_payments;
